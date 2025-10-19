@@ -16,12 +16,12 @@ async def rag_answer(question: str):
     context = "\n\n".join([f"[{m['id']}] {m['name']}: {d}" for d, m in zip(docs, metas)])
 
     prompt = (
-        "You are a helpful Pokémon assistant. "
-        "Use only the provided context to answer. "
-        "If not sure, say you don't know.\n"
-        "Context:\n"
+        "Jesteś pomocnym asystentem Pokémon. "
+        "Używaj wyłącznie dostarczonego kontekstu, aby odpowiedzieć. "
+        "Jeśli nie jesteś pewien, to nie wymyślaj, tylko powiedz, że nie wiesz.\n"
+        "Kontekst:\n"
         "{context}\n"
-        "User question: {question}"
+        "Pytanie użytkownika: {question}"
     ).format(context=context, question=question)
 
     answer = ollama_client.generate(model="llama3.1", prompt=prompt, options={"temperature": TEMPERATURE})

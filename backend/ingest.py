@@ -46,15 +46,15 @@ def build_document(pokemon_data, species_data):
     flavor_text = normalize_flavor_text(species_data.get("flavor_text_entries", []))
 
     doc_text = (
-        f"{name} (ID: {pid}) is a Pokémon of type(s): {types}. "
-        f"It has abilities: {abilities}. "
-        f"Base stats are: HP {stats.get('hp')}, Attack {stats.get('attack')}, "
-        f"Defense {stats.get('defense')}, Sp. Atk {stats.get('special-attack')}, "
-        f"Sp. Def {stats.get('special-defense')}, Speed {stats.get('speed')}. "
-        f"Height: {height}, Weight: {weight}. "
-        f"Example moves include: {', '.join(moves)}. "
-        f"Pokémon species: {species_data['name']}. "
-        f"Flavor text: {flavor_text}"
+        f"{name} (ID: {pid}) to Pokémon typu: {types}. "
+        f"Posiada umiejętności: {abilities}. "
+        f"Podstawowe statystyki to: HP {stats.get('hp')}, Atak {stats.get('attack')}, "
+        f"Obrona {stats.get('defense')}, Sp. Atak {stats.get('special-attack')}, "
+        f"Sp. Obrona {stats.get('special-defense')}, Szybkość {stats.get('speed')}. "
+        f"Wysokość: {height}, Waga: {weight}. "
+        f"Przykładowe ruchy to: {', '.join(moves)}. "
+        f"Gatunek Pokémona: {species_data['name']}. "
+        f"Opis: {flavor_text}"
     )
 
     metadata = {

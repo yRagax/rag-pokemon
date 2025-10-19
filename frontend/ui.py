@@ -10,6 +10,6 @@ def chat_fn(message, history):
     data = resp.json()
     answer = data["answer"]["response"]
     citations = ", ".join([f"{c['name']} (#{c['id']})" for c in data["citations"]])
-    return f"{answer}\n\n**Sources:** {citations}"
+    return f"{answer}\n\n**Źródła:** {citations}"
 
 gr.ChatInterface(fn=chat_fn, title="Pokémon RAG Chat").launch(server_name="0.0.0.0", server_port=7860)
