@@ -21,8 +21,7 @@ async def rag_answer(question: str):
         "If not sure, say you don't know.\n"
         "Context:\n"
         "{context}\n"
-        "User question: {question}\n"
-        "Answer with citations (id and name)."
+        "User question: {question}"
     ).format(context=context, question=question)
 
     answer = ollama_client.generate(model="llama3.1", prompt=prompt, options={"temperature": TEMPERATURE})
