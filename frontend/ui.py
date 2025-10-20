@@ -8,7 +8,7 @@ def chat_fn(message, history):
     if resp.status_code != 200:
         return "Error: backend not reachable"
     data = resp.json()
-    answer = data["answer"]["response"]
+    answer = data["answer"]
     citations = ", ".join([f"{c['name']} (#{c['id']})" for c in data["citations"]])
     return f"{answer}\n\n**Źródła:** {citations}"
 
