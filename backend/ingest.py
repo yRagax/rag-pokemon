@@ -62,6 +62,12 @@ def build_document(pokemon_data, species_data):
         "name": name,
         "types": ", ".join([t["type"]["name"] for t in pokemon_data["types"]]),
         "abilities": ", ".join([a["ability"]["name"] for a in pokemon_data["abilities"]]),
+        "hp": stats.get("hp"),
+        "attack": stats.get("attack"),
+        "defense": stats.get("defense"),
+        "special-attack": stats.get("special-attack"),
+        "special-defense": stats.get("special-defense"),
+        "speed": stats.get("speed"),
     }
 
     return doc_text, metadata
@@ -93,7 +99,6 @@ async def ingest():
     embeddings = [e.tolist() for e in embeddings]
 
     print(f"Saving to ChromaDB at {CHROMA_PATH} ...")
-    print(f"metadata: {metas[0]}")
     collection.add(documents=docs, embeddings=embeddings, metadatas=metas, ids=ids)
 
     print("Ingestion complete! (200 Pokémon saved)")
