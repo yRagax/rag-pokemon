@@ -1,5 +1,5 @@
 from langchain_ollama import OllamaLLM
-from .db import collection, query_pokemon_advanced
+from .db import query_pokemon_advanced
 from .filter_agent import filter_agent
 from .config import TEMPERATURE
 
@@ -13,10 +13,10 @@ async def rag_answer(question: str):
 
     print(f"Filtr:\n{filter["structured_response"]}")
 
-    results = query_pokemon_advanced(collection, filter["structured_response"])[:5]
+    results = query_pokemon_advanced(filter["structured_response"])[:5]
     docs = [r['documents'] for r in results]
     metas = [r['metadatas'] for r in results]
-    context = "\n\n".join(docs)
+    context = "\n".join(docs)
 
     print(f"Scalony kontekst:\n{context}")
 
