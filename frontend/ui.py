@@ -4,7 +4,15 @@ import requests
 BACKEND_URL = "http://localhost:8000/chat"
 
 def chat_fn(message, history):
-    resp = requests.post(BACKEND_URL, json={"message": message})
+    formatted_history = []
+    for pair in history:
+        formatted_history.append({"role": "user", "content": pair[0]})
+        formatted_history.append({"role": "assistant", "content": pair[1]})
+    payload = {
+        "message": message,
+        "history": formatted_history
+    }
+    resp = requests.post(BACKEND_URL, json=payload, timeout=120)
     if resp.status_code != 200:
         return "Error: backend not reachable"
     data = resp.json()

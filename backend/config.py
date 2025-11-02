@@ -10,3 +10,4 @@ TOP_K = int(os.getenv("TOP_K"))
 TEMPERATURE = float(os.getenv("TEMPERATURE"))
 POKEAPI_BASE=os.getenv("POKEAPI_BASE")
 POKEMON_COUNT=int(os.getenv("POKEMON_COUNT"))
+USE_HISTORY = os.getenv("USE_HISTORY").lower() == "true"

@@ -6,6 +6,7 @@ app = FastAPI()
 
 class ChatRequest(BaseModel):
     message: str
+    history: list[dict] = []
 
 @app.get("/health")
 def health():
@@ -15,5 +16,5 @@ def health():
 async def chat(req: ChatRequest):
     if not req.message:
         raise HTTPException(status_code=400, detail="Message is required")
-    result = await rag_answer(req.message)
+    result = await rag_answer(req.message, req.history)
     return result

@@ -1,11 +1,11 @@
 from langchain_ollama import OllamaLLM
 from .db import query_pokemon_advanced
 from .filter_agent import filter_agent
-from .config import TEMPERATURE
+from .config import TEMPERATURE, USE_HISTORY
 
 llm = OllamaLLM(model="llama3.1:8b", temperature=TEMPERATURE)
 
-async def rag_answer(question: str):
+async def rag_answer(question: str, history: list[dict] = []):
 
     filter = filter_agent.invoke({
         "messages": [{"role": "user", "content": question}]
@@ -22,13 +22,20 @@ async def rag_answer(question: str):
 
     final_prompt = (
         "Jesteś pomocnym asystentem Pokémon. "
-        "Odpowiedz na pytanie użytkownika dotyczące się Pokémonów. "
+        "Odpowiedz na pytanie użytkownika dotyczące Pokémonów. "
         "Używaj wyłącznie dostarczonego kontekstu, aby odpowiedzieć. "
-        "Jeśli nie jesteś pewien, to nie wymyślaj, tylko powiedz, 'Nie wiem'.\n"
-        "Kontekst:\n"
-        "{context}\n"
-        "Pytanie użytkownika: {question}"
-    ).format(context=context, question=question)
+        "Jeśli nie jesteś pewien, to nie wymyślaj, tylko powiedz 'Nie wiem'.\n\n"
+    )
+
+    if USE_HISTORY:
+        history_text = "\n".join(f"{msg['role'].capitalize()}: {msg['content']}" for msg in history)
+        print(f"Historia czatu:\n{history_text}")
+        final_prompt += f"Historia czatu:\n{history_text}\n\n"
+
+    final_prompt += (
+        f"Kontekst:\n{context}\n\n"
+        f"Pytanie użytkownika: {question}"
+    )
 
     final_response = llm.invoke(final_prompt)
 
