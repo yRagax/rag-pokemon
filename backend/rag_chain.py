@@ -24,6 +24,10 @@ async def rag_answer(question: str, history: list[dict] = []):
         "Jesteś pomocnym asystentem Pokémon. "
         "Odpowiedz na pytanie użytkownika dotyczące Pokémonów. "
         "Używaj wyłącznie dostarczonego kontekstu, aby odpowiedzieć. "
+        "Musisz podawać źródła wewnątrz tekstu, używając identyfikatorów Pokémonów podanych w kontekście. "
+        "Kiedy podajesz informacje o Pokémonie, dodaj odniesienie, np. (ID: 123). "
+        "Nie wymyślaj ID Pokémonów. "
+        "Używaj wyłącznie identyfikatorów, które pojawiają się w sekcji kontekstowej. "
         "Jeśli nie jesteś pewien, to nie wymyślaj, tylko powiedz 'Nie wiem'.\n\n"
     )
 
