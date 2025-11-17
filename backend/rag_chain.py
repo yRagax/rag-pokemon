@@ -1,19 +1,24 @@
 from langchain_ollama import OllamaLLM
+from langgraph.errors import GraphRecursionError
 from .db import query_pokemon_advanced
 from .filter_agent import filter_agent
 from .config import TEMPERATURE, USE_HISTORY
+from .models import PokemonFilter
 
 llm = OllamaLLM(model="llama3.1:8b", temperature=TEMPERATURE)
 
 async def rag_answer(question: str, history: list[dict] = []):
 
-    filter = filter_agent.invoke({
-        "messages": [{"role": "user", "content": question}]
-    })
+    try:
+        filter = filter_agent.invoke({
+            "messages": [{"role": "user", "content": question}]
+        })['structured_response']
+    except GraphRecursionError:
+        filter = PokemonFilter()
 
-    print(f"Filtr:\n{filter["structured_response"]}")
+    print(f"Filtr:\n{filter}")
 
-    results = query_pokemon_advanced(filter["structured_response"])[:5]
+    results = query_pokemon_advanced(filter)[:5]
     docs = [r['documents'] for r in results]
     metas = [r['metadatas'] for r in results]
     context = "\n".join(docs)
