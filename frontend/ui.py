@@ -19,10 +19,13 @@ def format_inline_citations(text):
 
 def chat_fn(message, history):
 
+    history = history + [[message, '<i class="typing-dots">⏳ Thinking</i>']]
+    yield "", history
+
     formatted_history = []
-    for user_msg, assistant_msg in history:
+    for user_msg, assistant_msg in history[:-1]:
         formatted_history.append({"role": "user", "content": user_msg})
-        formatted_history.append({"role": "assistant", "content": assistant_msg.value if isinstance(assistant_msg, gr.HTML) else assistant_msg})
+        formatted_history.append({"role": "assistant", "content": assistant_msg})
 
     payload = {"message": message, "history": formatted_history}
 
@@ -30,11 +33,15 @@ def chat_fn(message, history):
     try:
         resp = requests.post(BACKEND_URL, json=payload, timeout=120)
     except requests.exceptions.RequestException:
-        return history + [[message, "❌ Error: backend not reachable."]]
+        history[-1][1] = "❌ Error: backend not reachable."
+        yield "", history
+        return
 
     elapsed = time.time() - start_time
     if resp.status_code != 200:
-        return history + [[message, f"❌ Backend error: {resp.status_code} (⏱ {elapsed:.1f}s)"]]
+        history[-1][1] = f"❌ Backend error: {resp.status_code} (⏱ {elapsed:.1f}s)"
+        yield "", history
+        return
 
     data = resp.json()
     answer = data["answer"]
@@ -42,16 +49,28 @@ def chat_fn(message, history):
     answer = format_inline_citations(answer)
     answer = answer.replace('\n', '<br>')
 
-    answer_html = gr.HTML(
+    answer_html = (
         f"{answer}"
         # f"<hr><b>Sources:</b> "
         # f"{', '.join([f'{c['name']} (#{c['id']})' for c in data['citations']])}"
         f"<br><br><i>🕓 Thought for {elapsed:.1f}s</i>"
     )
 
-    return '', history + [[message, answer_html]]
+    history[-1][1] = answer_html
+    yield "", history
 
-with gr.Blocks(title="Pokémon RAG Chat") as demo:
+with gr.Blocks(title="Pokémon RAG Chat", css="""
+.typing-dots::after {
+  content: '...';
+  animation: dots 1s steps(3, end) infinite;
+}
+@keyframes dots {
+  0%, 20% { content: ''; }
+  40% { content: '.'; }
+  60% { content: '..'; }
+  80%, 100% { content: '...'; }
+}
+""") as demo:
     chatbot = gr.Chatbot(label="Pokémon RAG Chat", type='tuples', height=600)
     textbox = gr.Textbox(label="Ask something")
 
