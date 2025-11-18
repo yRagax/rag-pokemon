@@ -1,20 +1,21 @@
+from string import Template
 import gradio as gr
 import requests
 import time
 import re
 
 BACKEND_URL = "http://localhost:8000/chat"
+with open("frontend/assets/html/inline_source_button.html", 'r') as f:
+    CITATION_TEMPLATE = Template(f.read())
+with open("frontend/assets/css/typing_dots.css", 'r') as f:
+    TYPING_DOTS_STYLE = f.read()
 
 def format_inline_citations(text):
     pattern = r"\(ID:\s*(\d+)\)"
     def repl(m):
         poke_id = m.group(1)
         url = f"https://www.pokemon.com/us/pokedex/{poke_id}"
-        return (f'<a href="{url}" target="_blank" '
-                f'style="display:inline-block; padding:2px 6px; margin-left:4px; '
-                f'background:#eef; border:1px solid #99c; border-radius:6px; '
-                f'font-size:0.50em; text-decoration:none; color:#004;">'
-                f'Source {poke_id}</a>')
+        return CITATION_TEMPLATE.substitute(poke_id=poke_id, url=url)
     return re.sub(pattern, repl, text)
 
 def chat_fn(message, history):
@@ -59,18 +60,7 @@ def chat_fn(message, history):
     history[-1][1] = answer_html
     yield "", history
 
-with gr.Blocks(title="Pokémon RAG Chat", css="""
-.typing-dots::after {
-  content: '...';
-  animation: dots 1s steps(3, end) infinite;
-}
-@keyframes dots {
-  0%, 20% { content: ''; }
-  40% { content: '.'; }
-  60% { content: '..'; }
-  80%, 100% { content: '...'; }
-}
-""") as demo:
+with gr.Blocks(title="Pokémon RAG Chat", css=TYPING_DOTS_STYLE) as demo:
     chatbot = gr.Chatbot(label="Pokémon RAG Chat", type='tuples', height=600)
     textbox = gr.Textbox(label="Ask something")
 
